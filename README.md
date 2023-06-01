@@ -262,12 +262,29 @@ upstream flaskapp {
 $ docker container run -d --name nginx -p 80:80 -p 443:443 --network flask-network -v $(pwd)/default.conf:/etc/nginx/conf.d/default.conf -v $(pwd)/fullchain.pem:/var/fullchain.pem -v $(pwd)/privkey.pem:/var/privkey.pem nginx:alpine
 ```
  **-d:** Runs the container in detached mode, which means it runs in the background.
+ 
  **--name nginx:** Sets the name of the container as "nginx".
+ 
  **-p 80:80 -p 443:443:** Maps the host's ports 80 and 443 to the container's ports 80 and 443, respectively. This allows HTTP and HTTPS traffic to reach the container.
+ 
   **--network flask-network:** Connects the container to the "flask-network" Docker network. This allows communication between the Nginx container and the backend Flask application containers.
+  
  **-v $(pwd)/default.conf:/etc/nginx/conf.d/default.conf:** Mounts the "default.conf" file from the host to the container's "/etc/nginx/conf.d/default.conf" path. This file contains the Nginx configuration for reverse proxying and load balancing.
+ 
   **-v $(pwd)/fullchain.pem:/var/fullchain.pem:** Mounts the "fullchain.pem" SSL certificate file from the host to the container's "/var/fullchain.pem" path. This provides the SSL certificate for HTTPS encryption.
+  
  **-v $(pwd)/privkey.pem:/var/privkey.pem:** Mounts the "privkey.pem" private key file from the host to the container's "/var/privkey.pem" path. This provides the private key for HTTPS encryption.
+ 
  **nginx:alpine:** Specifies the image to use for the container. In this case, it uses the "nginx:alpine" image, which is a lightweight version of Nginx based on Alpine Linux.
 
 By running this command, we're starting an Nginx container that will listen on ports 80 and 443, use the provided configuration file and SSL certificate files, and connect to the "flask-network" Docker network. It will act as a reverse proxy and load balancer for your Flask application containers.
+
+### Results
+
+I'm attaching screenshots of websites load when I call flask.ashna.online
+
+![alt text](https://i.ibb.co/VmJsGvK/nginx2.png)
+
+![alt text](https://i.ibb.co/2NC10xy/nginx3.png)
+
+![alt text](https://i.ibb.co/g3tTJ5d/nginx1.png)
