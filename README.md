@@ -18,7 +18,14 @@ Nginx can be used as a great load balancer to distribute incoming traffic to ser
 
 **Let’s create an example with docker and a simple python Flask app to test this method and see how they affect our requests:**
 
-We can follow these steps:
+><b>/Install Docker on Host machine</b>
+
+```
+yum install docker -y
+systemctl enable docker.service
+systemctl restart docker.service
+```
+We can follow these steps then:
 
   1.  Obtain SSL certificate and keys:
         Obtain an SSL certificate for domain "flask.ashna.online" from a trusted certificate authority or use Let's Encrypt for free SSL   certificates.
