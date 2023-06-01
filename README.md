@@ -208,6 +208,17 @@ ecbc06c8fba3ac84c7fea8baa43d1221567d330491982ce474080858664f668d
 ```
 ### Step 4 - Setup the Nginx Container
 
+  - The server block defines the server configuration for the domain flask.ashna.online. It listens on ports 80 and 443 for HTTP and HTTPS traffic, respectively.
+  - The if block checks if the request scheme is not HTTPS and redirects it to HTTPS using a permanent redirect.
+  - The ssl_certificate and ssl_certificate_key directives specify the paths to the SSL certificate and private key files for enabling HTTPS.
+  - The location / block handles all requests for the root URL or any path under it.
+  - The proxy_set_header directives are used to pass the necessary headers to the backend Flask application for proper request handling.
+  - The proxy_pass directive specifies the backend server or upstream group (flaskapp) to which the requests will be forwarded.
+  - The error_page and location = /50x.html blocks define error page handling for server errors.
+   - The upstream flaskapp block specifies the backend servers (website1, website2, website3) and their respective ports (5000) for load balancing.
+   - 
+This Nginx configuration acts as a reverse proxy and load balancer for the Flask application running on the backend containers (website1, website2, website3). It enables HTTPS traffic, forwards requests to the backend servers.
+
 ><b>Create Default NGINX Configuration file</b>
 ```
 server {
