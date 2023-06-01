@@ -14,3 +14,6 @@ Nginx can be used as a great load balancer to distribute incoming traffic to ser
    **Flexible Load Balancing Algorithms:** NGINX offers various load balancing algorithms, such as round-robin, least connections, IP hash, and more. These algorithms allow you to customize the load balancing behavior based on your application requirements, ensuring efficient distribution of traffic.
 
    **Logging and Monitoring:** NGINX offers comprehensive logging and monitoring capabilities. You can gather detailed metrics, monitor server health, track request/response data, and analyze logs to gain insights into the performance and behavior of your application.
+
+
+**Let’s create an example with docker and a simple python Flask app to test this method and see how they affect our requests:**
