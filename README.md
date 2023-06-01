@@ -86,3 +86,148 @@ Key is saved at:         /etc/letsencrypt/live/flask.ashna.online/privkey.pem
 This certificate expires on 2023-08-30.
 These files will be updated when the certificate renews.
  ```
+### Step 2 - Creating three Backend Containers to run our Python Appication
+
+><b> Create a simple app.py and requests.txt</b>
+
+```
+$ cat app.py 
+
+from flask import Flask
+import os
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    
+  return '<h1><center>This is Flask Application - Version1 Nginx</center></h1>'
+
+flask_port = os.getenv('FLASK_PORT',5000)
+app.run(host='0.0.0.0', port=flask_port)
+
+$ cat requests.txt 
+Flask
+```
+><b> Create Dockerfile to build images</b>
+
+   **FROM alpine:latest:** Sets the base image for the Docker image as the latest version of Alpine Linux.
+
+   **ENV FLASK_DOCUMENTROOT /var/flaskapp:** Sets an environment variable FLASK_DOCUMENTROOT to specify the document root directory for the Flask application.
+
+   **ENV FLASK_USER flask:** Sets an environment variable FLASK_USER to specify the username for the Flask application user.
+
+   **ENV FLASK_PORT 5000:** Sets an environment variable FLASK_PORT to specify the port on which the Flask application will listen.
+
+   **RUN mkdir -p $FLASK_DOCUMENTROOT:** Creates the directory specified by FLASK_DOCUMENTROOT to be used as the document root.
+
+   **RUN adduser -h $FLASK_DOCUMENTROOT -D -s /bin/sh $FLASK_USER:** Adds a new user with the username specified by FLASK_USER and sets the home directory to FLASK_DOCUMENTROOT.
+
+   **WORKDIR $FLASK_DOCUMENTROOT:** Sets the working directory for subsequent commands to FLASK_DOCUMENTROOT.
+
+   **COPY ./code/ .:** Copies the contents of the ./code/ directory (the Flask application code) into the current working directory ($FLASK_DOCUMENTROOT).
+
+   **RUN chown -R $FLASK_USER:$FLASK_USER $FLASK_DOCUMENTROOT:** Changes the ownership of the files in the document root directory to the user specified by FLASK_USER.
+
+   **RUN apk update && apk add python3 py3-pip --no-cache:** Updates the Alpine package index and installs Python 3 and pip3.
+
+   **RUN pip3 install -r requests.txt:** Installs the Python dependencies listed in the requests.txt file using pip3.
+
+   **USER $FLASK_USER:** Sets the user to the one specified by FLASK_USER for subsequent commands.
+
+   **EXPOSE $FLASK_PORT:** Exposes the port specified by FLASK_PORT to allow incoming connections.
+
+   **ENTRYPOINT ["python3"]:** Specifies the entrypoint command for the container, which is python3.
+
+   **CMD ["app.py"]:** Specifies the default command to be executed when the container starts, which is python3 app.py.
+
+```
+FROM alpine:latest
+
+ENV FLASK_DOCUMENTROOT /var/flaskapp
+
+ENV FLASK_USER flask
+
+ENV FLASK_PORT 5000
+
+RUN mkdir -p $FLASK_DOCUMENTROOT
+
+RUN adduser -h $FLASK_DOCUMENTROOT  -D  -s /bin/sh  $FLASK_USER
+
+WORKDIR $FLASK_DOCUMENTROOT
+
+COPY ./code/ .
+
+RUN chown -R  $FLASK_USER:$FLASK_USER $FLASK_DOCUMENTROOT
+
+RUN apk update && apk add python3 py3-pip --no-cache
+
+RUN pip3 install -r requests.txt
+
+USER $FLASK_USER
+
+EXPOSE $FLASK_PORT
+
+ENTRYPOINT ["python3"]
+
+CMD ["app.py"]
+```
+><b> Create Three images for Three containers so as the websites print Version 1, Version 2 and Version 3 respctively.</b>
+
+To build the Docker image using this Dockerfile, navigate to the directory where the Dockerfile is saved and run the following command:
+    FROM alpine:latest: Sets the base image for the Docker image as the latest version of Alpine Linux.
+
+    ENV FLASK_DOCUMENTROOT /var/flaskapp: Sets an environment variable FLASK_DOCUMENTROOT to specify the document root directory for the Flask application.
+
+    ENV FLASK_USER flask: Sets an environment variable FLASK_USER to specify the username for the Flask application user.
+
+    ENV FLASK_PORT 5000: Sets an environment variable FLASK_PORT to specify the port on which the Flask application will listen.
+
+    RUN mkdir -p $FLASK_DOCUMENTROOT: Creates the directory specified by FLASK_DOCUMENTROOT to be used as the document root.
+
+    RUN adduser -h $FLASK_DOCUMENTROOT -D -s /bin/sh $FLASK_USER: Adds a new user with the username specified by FLASK_USER and sets the home directory to FLASK_DOCUMENTROOT.
+
+    WORKDIR $FLASK_DOCUMENTROOT: Sets the working directory for subsequent commands to FLASK_DOCUMENTROOT.
+
+    COPY ./code/ .: Copies the contents of the ./code/ directory (the Flask application code) into the current working directory ($FLASK_DOCUMENTROOT).
+
+    RUN chown -R $FLASK_USER:$FLASK_USER $FLASK_DOCUMENTROOT: Changes the ownership of the files in the document root directory to the user specified by FLASK_USER.
+
+    RUN apk update && apk add python3 py3-pip --no-cache: Updates the Alpine package index and installs Python 3 and pip3.
+
+    RUN pip3 install -r requests.txt: Installs the Python dependencies listed in the requests.txt file using pip3.
+
+    USER $FLASK_USER: Sets the user to the one specified by FLASK_USER for subsequent commands.
+
+    EXPOSE $FLASK_PORT: Exposes the port specified by FLASK_PORT to allow incoming connections.
+
+    ENTRYPOINT ["python3"]: Specifies the entrypoint command for the container, which is python3.
+
+    CMD ["app.py"]: Specifies the default command to be executed when the container starts, which is python3 app.py.
+
+To build the Docker image using this Dockerfile, navigate to the directory where the Dockerfile is saved and run the following command:
+```
+docker image build -t nginxflask:1 .
+```
+Repeat for Version2 and 3
+
+><b> Create a Custom network</b>
+Custom networks enable containers to communicate with each other using their container names as hostnames.
+```
+$ docker network create flask-network
+09ec9558c3d693035ea4654c6e155d2be25c78ec8afec05886a28a4171b2b9a3
+```
+><b>Create 3 Backend containers using three images built</b>
+Run three Docker containers named website1, website2, and website3 based on the nginxflask image with different versions (1, 2, and 3) on the flask-network network. Here's a breakdown of the commands:
+    
+    docker container run --name website1 -d --network flask-network nginxflask:1: Runs a Docker container named website1 in the background (-d) using the nginxflask:1 image. The container is connected to the flask-network network.
+    
+```
+# docker container run --name website1 -d --network flask-network nginxflask:1
+c281123302f3bb242c894a368de4fff4905114858517f276e51ae84607619d66
+
+# docker container run --name website2 -d --network flask-network nginxflask:2
+ecbc06c8fba3ac84c7fea8baa43d1221567d330491982ce474080858664f668d
+
+# docker container run --name website3 -d --network flask-network nginxflask:3
+1d588e44e69ffa1df3424df58e2b9055d0dd22433e2146e137b68caee693985a
+```
