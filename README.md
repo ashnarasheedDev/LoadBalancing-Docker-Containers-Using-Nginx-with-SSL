@@ -206,3 +206,40 @@ ecbc06c8fba3ac84c7fea8baa43d1221567d330491982ce474080858664f668d
 # docker container run --name website3 -d --network flask-network nginxflask:3
 1d588e44e69ffa1df3424df58e2b9055d0dd22433e2146e137b68caee693985a
 ```
+### Step 4 - Setup the Nginx Container
+
+><b>Create Default NGINX Configuration file</b>
+```
+server {
+    listen      80;
+    listen  443 ssl;
+ 
+ if ($scheme != "https") {
+    rewrite ^ https://$host$uri permanent;
+    }
+  server_name  flask.ashna.online;
+ 
+ssl_certificate /var/fullchain.pem;
+ssl_certificate_key /var/privkey.pem;
+    location / {
+     proxy_set_header HOST $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://flaskapp;
+}
+   
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+ 
+   
+}
+ 
+upstream flaskapp {
+  server website1:5000;
+  server website2:5000;
+  server website3:5000;
+}
+```
