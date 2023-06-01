@@ -206,7 +206,9 @@ ecbc06c8fba3ac84c7fea8baa43d1221567d330491982ce474080858664f668d
 # docker container run --name website3 -d --network flask-network nginxflask:3
 1d588e44e69ffa1df3424df58e2b9055d0dd22433e2146e137b68caee693985a
 ```
-### Step 4 - Setup the Nginx Container
+### Step 3 - Setup the Nginx Container
+
+><b>Create Default NGINX Configuration file</b>
 
   - The server block defines the server configuration for the domain flask.ashna.online. It listens on ports 80 and 443 for HTTP and HTTPS traffic, respectively.
   - The if block checks if the request scheme is not HTTPS and redirects it to HTTPS using a permanent redirect.
@@ -219,7 +221,6 @@ ecbc06c8fba3ac84c7fea8baa43d1221567d330491982ce474080858664f668d
    - 
 This Nginx configuration acts as a reverse proxy and load balancer for the Flask application running on the backend containers (website1, website2, website3). It enables HTTPS traffic, forwards requests to the backend servers.
 
-><b>Create Default NGINX Configuration file</b>
 ```
 server {
     listen      80;
@@ -254,3 +255,19 @@ upstream flaskapp {
   server website3:5000;
 }
 ```
+
+### Step 4 - Create Nginx Container
+
+```
+$ docker container run -d --name nginx -p 80:80 -p 443:443 --network flask-network -v $(pwd)/default.conf:/etc/nginx/conf.d/default.conf -v $(pwd)/fullchain.pem:/var/fullchain.pem -v $(pwd)/privkey.pem:/var/privkey.pem nginx:alpine
+```
+ **-d:** Runs the container in detached mode, which means it runs in the background.
+ **--name nginx:** Sets the name of the container as "nginx".
+ **-p 80:80 -p 443:443:** Maps the host's ports 80 and 443 to the container's ports 80 and 443, respectively. This allows HTTP and HTTPS traffic to reach the container.
+  **--network flask-network:** Connects the container to the "flask-network" Docker network. This allows communication between the Nginx container and the backend Flask application containers.
+ **-v $(pwd)/default.conf:/etc/nginx/conf.d/default.conf:** Mounts the "default.conf" file from the host to the container's "/etc/nginx/conf.d/default.conf" path. This file contains the Nginx configuration for reverse proxying and load balancing.
+  **-v $(pwd)/fullchain.pem:/var/fullchain.pem:** Mounts the "fullchain.pem" SSL certificate file from the host to the container's "/var/fullchain.pem" path. This provides the SSL certificate for HTTPS encryption.
+ **-v $(pwd)/privkey.pem:/var/privkey.pem:** Mounts the "privkey.pem" private key file from the host to the container's "/var/privkey.pem" path. This provides the private key for HTTPS encryption.
+ **nginx:alpine:** Specifies the image to use for the container. In this case, it uses the "nginx:alpine" image, which is a lightweight version of Nginx based on Alpine Linux.
+
+By running this command, we're starting an Nginx container that will listen on ports 80 and 443, use the provided configuration file and SSL certificate files, and connect to the "flask-network" Docker network. It will act as a reverse proxy and load balancer for your Flask application containers.
