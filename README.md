@@ -285,6 +285,8 @@ I'm attaching screenshots of websites load when I call flask.ashna.online
 
 ![alt text](https://i.ibb.co/VmJsGvK/nginx2.png)
 
+
 ![alt text](https://i.ibb.co/2NC10xy/nginx3.png)
+
 
 ![alt text](https://i.ibb.co/g3tTJ5d/nginx1.png)
