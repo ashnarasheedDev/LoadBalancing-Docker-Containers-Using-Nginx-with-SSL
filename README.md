@@ -17,3 +17,30 @@ Nginx can be used as a great load balancer to distribute incoming traffic to ser
 
 
 **Let’s create an example with docker and a simple python Flask app to test this method and see how they affect our requests:**
+
+We can follow these steps:
+
+  1.  Obtain SSL certificate and keys:
+        Obtain an SSL certificate for domain "flask.ashna.online" from a trusted certificate authority or use Let's Encrypt for free SSL   certificates.
+        Install the SSL certificate and obtain the SSL key files.
+
+  2.  Create the backend containers:
+        Build three Docker images, each containing a simple Python Flask app running on port 5000 with different versions.
+        Run the containers based on the images, ensuring they expose port 5000.
+
+  3.  Set up NGINX container:
+        Build a Docker image for the NGINX container with a custom configuration.
+        In the NGINX configuration, add an upstream block to define the backend servers:
+        Configure NGINX to listen on ports 80 and 443, and set up SSL termination using the obtained SSL certificate and keys.
+        Add a location block to proxy pass requests to the backend servers
+
+  4.  Run the NGINX container:
+
+        Run the NGINX container, ensuring it is linked to the backend containers.
+
+  5. Update DNS and configure firewall:
+
+        Update the DNS settings for "flask.ashna.online" to point to the public IP address of host server.
+        Configure the firewall settings to allow inbound traffic on ports 80 and 443.
+    
+    
