@@ -281,6 +281,14 @@ $ docker container run -d --name nginx -p 80:80 -p 443:443 --network flask-netwo
 By running this command, we're starting an Nginx container that will listen on ports 80 and 443, use the provided configuration file and SSL certificate files, and connect to the "flask-network" Docker network. It will act as a reverse proxy and load balancer for your Flask application containers.
 
 ### Results
+```
+$ docker container ls
+CONTAINER ID   IMAGE          COMMAND                  CREATED       STATUS       PORTS                                                                      NAMES
+b4bbf4167839   nginx:alpine   "/docker-entrypoint.…"   3 hours ago   Up 3 hours   0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:443->443/tcp, :::443->443/tcp   nginx
+1d588e44e69f   nginxflask:3   "python3 app.py"         4 hours ago   Up 4 hours   5000/tcp                                                                   website3
+ecbc06c8fba3   nginxflask:2   "python3 app.py"         4 hours ago   Up 4 hours   5000/tcp                                                                   website2
+c281123302f3   nginxflask:1   "python3 app.py"         4 hours ago   Up 4 hours   5000/tcp                                                                   website1
+```
 
 I'm attaching screenshots of websites load when I call flask.ashna.online
 
